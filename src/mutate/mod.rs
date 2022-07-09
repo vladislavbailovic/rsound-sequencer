@@ -1,6 +1,8 @@
 mod humanize;
 pub use humanize::*;
 
+// TODO: grid snapping mutator
+
 use note::Note;
 
 pub trait Mutator {

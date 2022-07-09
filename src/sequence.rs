@@ -2,6 +2,9 @@ use note::*;
 
 use crate::Mutator;
 
+// TODO: global volume and envelope
+// TODO: volumes track
+
 pub struct Sequence {
     seq: Vec<Note>,
 }
