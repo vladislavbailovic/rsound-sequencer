@@ -1,5 +1,5 @@
 #[cfg(feature = "graph")]
-use crate::graph::Roll;
+use sequencer::graph::Roll;
 
 use note::*;
 
