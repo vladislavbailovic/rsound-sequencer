@@ -14,7 +14,7 @@ fn get_blocks() -> Vec<(Option<i32>, f32)> {
         pause![1 / 14],
         note![B: C0, 1 / 8 T],
     ])
-    .transform(Humanize::default())
+    .transform(Humanize::note())
     .iter()
     .map(|n| {
         let y = n.midi();

@@ -2,30 +2,23 @@ use note::Value;
 // TODO: global volume and envelope
 // TODO: volumes track
 
-pub trait Trigger {
-    fn intensity(&self) -> f64;
-    fn set_intensity(&mut self, ni: f64);
-    fn duration(&self) -> Value;
-}
-
+#[derive(Clone, Copy)]
 pub struct Amount {
     value: f64,
     duration: Value,
 }
 
-impl Trigger for Amount {
-    fn intensity(&self) -> f64 {
+impl Amount {
+    pub fn intensity(&self) -> f64 {
         self.value
     }
-    fn set_intensity(&mut self, ni: f64) {
+    pub fn set_intensity(&mut self, ni: f64) {
         self.value = ni;
     }
-    fn duration(&self) -> Value {
+    pub fn duration(&self) -> Value {
         self.duration
     }
-}
 
-impl Amount {
     pub fn new(duration: Value) -> Self {
         Self {
             value: 1.0,
@@ -51,8 +44,7 @@ mod tests {
 
     #[test]
     fn intensity() {
-        let mut v = Amount::new(Value::Frac(1.0));
-        v.set_intensity(0.25);
-        assert_eq!(v.intensity(), 0.25);
+        let v = Amount::new(Value::Frac(1.0));
+        assert_eq!(v.intensity(), 1.0);
     }
 }

@@ -1,49 +1,71 @@
 use std::ops::Range;
 
 use super::Mutator;
+use crate::amount::Amount;
 use crate::random::Random;
 use note::*;
 
 pub struct Humanize {
     resolution: usize,
     range: Range<usize>,
-    frequency: f32,
+    frequency: f64,
 }
 
-impl Default for Humanize {
-    fn default() -> Self {
-        Self {
-            resolution: 256,
-            range: Range { start: 1, end: 32 },
-            frequency: 0.5,
+impl Humanize {
+    pub fn note() -> HumanizeNote {
+        HumanizeNote {
+            humanizer: Self {
+                resolution: 256,
+                range: Range { start: 1, end: 32 },
+                frequency: 0.5,
+            },
         }
+    }
+    pub fn amount() -> HumanizeAmount {
+        HumanizeAmount {
+            humanizer: Self {
+                resolution: 100,
+                range: Range {
+                    start: 75,
+                    end: 125,
+                },
+                frequency: 0.25,
+            },
+        }
+    }
+
+    fn is_showtime(&self) -> bool {
+        let mut rng: Random = Default::default();
+        let doit = rng.random(1, 10);
+        doit as f64 > self.frequency * 10.0
+    }
+
+    fn range_value(&self) -> usize {
+        let mut rng: Random = Default::default();
+        rng.random(self.range.start, self.range.end)
     }
 }
 
-impl Mutator for Humanize {
+pub struct HumanizeNote {
+    humanizer: Humanize,
+}
+
+impl Mutator for HumanizeNote {
     type Data = Note;
 
     fn apply(&self, sequence: &[Self::Data]) -> Vec<Self::Data> {
-        let mut rng: Random = Default::default();
         let mut result = Vec::new();
         for &x in sequence {
-            let doit = rng.random(1, 10);
-            if doit as f32 > self.frequency * 10.0 {
-                eprintln!(
-                    "not humanizing because {} > {}!",
-                    doit,
-                    self.frequency * 10.0
-                );
+            if !self.humanizer.is_showtime() {
                 result.push(x);
                 continue;
             }
             if let Note::Tone(p, o, val) = x {
                 let offset = Value::from(
-                    rng.random(self.range.start, self.range.end),
-                    self.resolution,
+                    self.humanizer.range_value(),
+                    self.humanizer.resolution,
                     None,
                 );
-                eprintln!("humanizing with offset: {:#?}", offset);
                 if offset.per_beat() > val.per_beat() {
                     result.push(Note::Rest(offset));
                     result.push(Note::Tone(p, o, val - offset));
@@ -58,13 +80,37 @@ impl Mutator for Humanize {
     }
 }
 
+pub struct HumanizeAmount {
+    humanizer: Humanize,
+}
+
+impl Mutator for HumanizeAmount {
+    type Data = Amount;
+
+    fn apply(&self, sequence: &[Self::Data]) -> Vec<Self::Data> {
+        sequence
+            .iter()
+            .map(|&x| {
+                if !self.humanizer.is_showtime() {
+                    return x;
+                }
+                if x.intensity() != 0.0 {
+                    let ni = self.humanizer.range_value() as f64 / self.humanizer.resolution as f64;
+                    return Amount::at(ni, x.duration());
+                }
+                x
+            })
+            .collect()
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
     use crate::Sequence;
 
     #[test]
-    fn humanize() {
+    fn humanize_note() {
         let bpm = 60.0;
         let src = vec![
             note![A: C0, 1 / 4],
@@ -77,7 +123,7 @@ mod tests {
         ];
         let seq = Sequence::new(src.clone());
         let mut humanized = Sequence::new(src.clone());
-        humanized.transform(Humanize::default());
+        humanized.transform(Humanize::note());
 
         let total = seq.iter().map(|x| x.secs(bpm)).sum::<f32>();
         let human_total = humanized.iter().map(|x| x.secs(bpm)).sum::<f32>();
@@ -122,5 +168,29 @@ mod tests {
             pausetime,
             human_pausetime
         );
+    }
+
+    #[test]
+    fn humanize_amount() {
+        let bpm = 60.0;
+        let src = vec![
+            Amount::at(0.75, val![1 / 4]),
+            Amount::zero(val![1 / 14]),
+            Amount::new(val![1/4 T]),
+            Amount::zero(val![1 / 14]),
+            Amount::at(0.5, val![1 / 8]),
+            Amount::zero(val![1 / 14]),
+            Amount::new(val![1/8 T]),
+        ];
+        let seq = Sequence::new(src.clone());
+        let mut humanized = Sequence::new(src.clone());
+        humanized.transform(Humanize::amount());
+
+        let total = seq.iter().map(|x| x.duration().secs(bpm)).sum::<f32>();
+        let human_total = humanized
+            .iter()
+            .map(|x| x.duration().secs(bpm))
+            .sum::<f32>();
+        assert_eq!(total, human_total);
     }
 }

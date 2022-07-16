@@ -24,7 +24,6 @@ impl Random {
     pub fn random(&mut self, min: usize, max: usize) -> usize {
         assert!(max > min, "reverse humanizing not possible");
 
-        let max = max - min;
         let prev = (self.prev * self.a + self.b) % 1000000000;
         self.prev = prev;
 
@@ -38,7 +37,7 @@ mod tests {
 
     #[test]
     fn randomize() {
-        let max = 1312;
+        let max = 1611312;
         let min = 161;
         let mut rng: Random = Default::default();
         let mut prev: usize = 0;

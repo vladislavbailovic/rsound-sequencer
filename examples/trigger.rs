@@ -2,7 +2,7 @@
 use sequencer::graph::Hits;
 
 use note::*;
-use sequencer::{Amount, Sequence, Trigger};
+use sequencer::{Amount, Humanize, Sequence};
 
 #[cfg(feature = "graph")]
 fn main() -> std::io::Result<()> {
@@ -15,6 +15,7 @@ fn main() -> std::io::Result<()> {
         Amount::zero(val![1 / 14]),
         Amount::new(val![1/8 T]),
     ])
+    .transform(Humanize::amount())
     .iter()
     .map(|x| {
         let beats = 1.0 / x.duration().per_beat();
