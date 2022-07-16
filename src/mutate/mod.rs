@@ -3,8 +3,7 @@ pub use humanize::*;
 
 // TODO: grid snapping mutator
 
-use note::Note;
-
 pub trait Mutator {
-    fn apply(&self, sequence: &[Note]) -> Vec<Note>;
+    type Data;
+    fn apply(&self, sequence: &[Self::Data]) -> Vec<Self::Data>;
 }

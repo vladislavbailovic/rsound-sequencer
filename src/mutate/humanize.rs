@@ -53,7 +53,9 @@ impl Default for Humanize {
 }
 
 impl Mutator for Humanize {
-    fn apply(&self, sequence: &[Note]) -> Vec<Note> {
+    type Data = Note;
+
+    fn apply(&self, sequence: &[Self::Data]) -> Vec<Self::Data> {
         let mut rng: Random = Default::default();
         let mut result = Vec::new();
         for &x in sequence {
