@@ -4,6 +4,9 @@ use std::io::{BufWriter, Write};
 mod roll;
 pub use roll::*;
 
+mod hits;
+pub use hits::*;
+
 const MIN_WIDTH: i32 = 800;
 const MAX_HEIGHT: i32 = 600;
 
