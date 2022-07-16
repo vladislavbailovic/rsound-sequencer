@@ -8,12 +8,12 @@ pub trait Trigger {
     fn duration(&self) -> Value;
 }
 
-pub struct Volume {
+pub struct Amount {
     value: f64,
     duration: Value,
 }
 
-impl Trigger for Volume {
+impl Trigger for Amount {
     fn intensity(&self) -> f64 {
         self.value
     }
@@ -25,7 +25,7 @@ impl Trigger for Volume {
     }
 }
 
-impl Volume {
+impl Amount {
     pub fn new(duration: Value) -> Self {
         Self {
             value: 1.0,
@@ -50,14 +50,8 @@ mod tests {
     use super::*;
 
     #[test]
-    fn default() {
-        let v: Volume = Default::default();
-        assert_eq!(v.intensity(), 1.0, "full blast by default");
-    }
-
-    #[test]
     fn intensity() {
-        let mut v: Volume = Default::default();
+        let mut v = Amount::new(Value::Frac(1.0));
         v.set_intensity(0.25);
         assert_eq!(v.intensity(), 0.25);
     }

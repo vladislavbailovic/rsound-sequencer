@@ -7,8 +7,8 @@ pub use mutate::*;
 mod random;
 pub use random::*;
 
-mod trigger;
-pub use trigger::*;
+mod amount;
+pub use amount::*;
 
 #[cfg(feature = "graph")]
 pub mod graph;

@@ -2,18 +2,18 @@
 use sequencer::graph::Hits;
 
 use note::*;
-use sequencer::{Sequence, Trigger, Volume};
+use sequencer::{Amount, Sequence, Trigger};
 
 #[cfg(feature = "graph")]
 fn main() -> std::io::Result<()> {
     let values: Vec<(f64, f64)> = Sequence::new(vec![
-        Volume::at(0.75, val![1 / 4]),
-        Volume::zero(val![1 / 14]),
-        Volume::new(val![1/4 T]),
-        Volume::zero(val![1 / 14]),
-        Volume::at(0.5, val![1 / 8]),
-        Volume::zero(val![1 / 14]),
-        Volume::new(val![1/8 T]),
+        Amount::at(0.75, val![1 / 4]),
+        Amount::zero(val![1 / 14]),
+        Amount::new(val![1/4 T]),
+        Amount::zero(val![1 / 14]),
+        Amount::at(0.5, val![1 / 8]),
+        Amount::zero(val![1 / 14]),
+        Amount::new(val![1/8 T]),
     ])
     .iter()
     .map(|x| {
