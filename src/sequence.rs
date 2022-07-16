@@ -1,8 +1,5 @@
 use crate::Mutator;
 
-// TODO: global volume and envelope
-// TODO: volumes track
-
 pub struct Sequence<T> {
     seq: Vec<T>,
 }
