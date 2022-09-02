@@ -1,17 +1,21 @@
 #[cfg(feature = "graph")]
-use sequencer::graph::Roll;
+use graph::ppm::Renderer; 
+#[cfg(feature = "graph")]
+use graph::writer::{FileWriter, Writer};
+#[cfg(feature = "graph")]
+use graph::{Block, Graph, Roll};
 
 use note::*;
 use sequencer::*;
 
-fn get_blocks() -> Vec<(Option<i32>, f32)> {
+fn get_blocks() -> Vec<Block> {
     Sequence::new(vec![
         note![A: C0, 1 / 4],
-        pause![1 / 14],
+        // pause![1 / 14],
         note![C: C1, 1 / 4 T],
-        pause![1 / 14],
+        // pause![1 / 14],
         note![A: C0, 1 / 8],
-        pause![1 / 14],
+        // pause![1 / 14],
         note![B: C0, 1 / 8 T],
     ])
     .transform(Humanize::note())
@@ -20,7 +24,12 @@ fn get_blocks() -> Vec<(Option<i32>, f32)> {
         let y = n.midi();
         let beats = 1.0 / n.per_beat();
         let bars = beats * 4.0;
-        (y, bars)
+        println!("{:?}: {y:?} {bars}", n);
+        return if let Some(y) = y {
+            Block::new(bars.into(), y.into())
+        } else {
+            Block::new(0.0, 0.0)
+        }
     })
     .collect()
 }
@@ -29,16 +38,17 @@ fn get_blocks() -> Vec<(Option<i32>, f32)> {
 fn main() -> std::io::Result<()> {
     let blocks = get_blocks();
 
-    let mut roll = Roll::new();
-    roll.beats(4);
-    roll.draw("foo.ppm", &blocks)?;
+    let roll = Roll::new(&blocks);
+    let w = FileWriter::new("foo.ppm");
+    let renderer = Renderer::new(&roll.size());
+    w.write(renderer, roll)?;
 
     eprintln!(
         "notes: {}",
         blocks
             .iter()
             .map(|x| {
-                if x.0.is_some() {
+                if x.intensity().is_some() {
                     1
                 } else {
                     0
@@ -51,20 +61,20 @@ fn main() -> std::io::Result<()> {
         blocks
             .iter()
             .map(|x| {
-                if x.0.is_some() {
-                    x.1
+                if x.intensity().is_some() {
+                    *x.duration()
                 } else {
                     0.0
                 }
             })
-            .sum::<f32>()
+            .sum::<f64>()
     );
     eprintln!(
         "pauses: {}",
         blocks
             .iter()
             .map(|x| {
-                if x.0.is_none() {
+                if x.intensity().is_none() {
                     1
                 } else {
                     0
@@ -77,15 +87,15 @@ fn main() -> std::io::Result<()> {
         blocks
             .iter()
             .map(|x| {
-                if x.0.is_none() {
-                    x.1
+                if x.intensity().is_none() {
+                    *x.duration()
                 } else {
                     0.0
                 }
             })
-            .sum::<f32>()
+            .sum::<f64>()
     );
-    eprintln!("total: {}", blocks.iter().map(|x| x.1).sum::<f32>());
+    eprintln!("total: {}", blocks.iter().map(|x| x.duration()).sum::<f64>());
 
     Ok(())
 }
