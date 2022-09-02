@@ -1,5 +1,5 @@
 #[cfg(feature = "graph")]
-use graph::ppm::Renderer; 
+use graph::ppm::Renderer;
 #[cfg(feature = "graph")]
 use graph::writer::{FileWriter, Writer};
 #[cfg(feature = "graph")]
@@ -95,7 +95,10 @@ fn main() -> std::io::Result<()> {
             })
             .sum::<f64>()
     );
-    eprintln!("total: {}", blocks.iter().map(|x| x.duration()).sum::<f64>());
+    eprintln!(
+        "total: {}",
+        blocks.iter().map(|x| x.duration()).sum::<f64>()
+    );
 
     Ok(())
 }
