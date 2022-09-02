@@ -28,7 +28,7 @@ fn get_blocks() -> Vec<Block> {
         if let Some(y) = y {
             return Block::new(bars.into(), y.into());
         } else {
-            return Block::new(bars.into(), 20.0);
+            return Block::new(bars.into(), 00.0);
         }
     })
     .collect()
@@ -74,7 +74,7 @@ fn main() -> std::io::Result<()> {
         blocks
             .iter()
             .map(|x| {
-                if x.intensity().is_none() {
+                if x.intensity().is_none() || x.intensity() == Some(&0.0) {
                     1
                 } else {
                     0
@@ -87,7 +87,7 @@ fn main() -> std::io::Result<()> {
         blocks
             .iter()
             .map(|x| {
-                if x.intensity().is_none() {
+                if x.intensity().is_none() || x.intensity() == Some(&0.0) {
                     *x.duration()
                 } else {
                     0.0

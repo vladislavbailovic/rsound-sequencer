@@ -54,25 +54,33 @@ impl Mutator for HumanizeNote {
     type Data = Note;
 
     fn apply(&self, sequence: &[Self::Data]) -> Vec<Self::Data> {
+        // eprintln!("--- mutatin ---");
         let mut result = Vec::new();
         for &x in sequence {
+            // eprintln!("\t- sequence element: {x:?}");
             if !self.humanizer.is_showtime() {
+                // eprintln!("\t\t* it's showtime, apparently");
                 result.push(x);
                 continue;
             }
+            // eprintln!("\t\t* not showtime");
             if let Note::Tone(p, o, val) = x {
                 let offset = Value::from(
                     self.humanizer.range_value(),
                     self.humanizer.resolution,
                     None,
                 );
+                // eprintln!("\t\t* it's a note, given offset {offset:?}");
                 if offset.per_beat() > val.per_beat() {
+                    // eprintln!("\t\t* pushing rest and tone");
                     result.push(Note::Rest(offset));
                     result.push(Note::Tone(p, o, val - offset));
                 } else {
+                    // eprintln!("\t\t* pushing just original");
                     result.push(x);
                 }
             } else {
+                // eprintln!("\t\t* it's a rest");
                 result.push(x);
             }
         }
