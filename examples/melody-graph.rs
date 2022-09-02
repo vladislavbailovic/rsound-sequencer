@@ -24,11 +24,11 @@ fn get_blocks() -> Vec<Block> {
         let y = n.midi();
         let beats = 1.0 / n.per_beat();
         let bars = beats * 4.0;
-        println!("{:?}: {y:?} {bars}", n);
-        return if let Some(y) = y {
-            Block::new(bars.into(), y.into())
+        // println!("{:?}: pitch: {y:?}, duration: {bars}", n);
+        if let Some(y) = y {
+            return Block::new(bars.into(), y.into());
         } else {
-            Block::new(0.0, 0.0)
+            return Block::new(bars.into(), 20.0);
         }
     })
     .collect()
