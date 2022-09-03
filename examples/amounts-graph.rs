@@ -24,7 +24,7 @@ fn main() -> std::io::Result<()> {
     .map(|x| {
         let beats = 1.0 / x.duration().per_beat();
         let bars = beats * 4.0;
-        return Block::new(bars as f64, x.intensity() * 10.0)
+        return Block::new(bars as f64, x.intensity() * 10.0);
     })
     .collect();
 
