@@ -1,5 +1,9 @@
 #[cfg(feature = "graph")]
-use sequencer::graph::{Hits, Roll};
+use graph::ppm::Renderer;
+#[cfg(feature = "graph")]
+use graph::writer::{FileWriter, Writer};
+#[cfg(feature = "graph")]
+use graph::{Block, Graph, Track};
 
 use note::*;
 use sequencer::{Amount, Humanize, Sequence, Spaceout};
@@ -23,21 +27,18 @@ fn main() -> std::io::Result<()> {
         volumes.push(Amount::at(1.0, *value));
     }
 
-    let values: Vec<(f64, f64)> = Sequence::new(volumes)
+    let values: Vec<Block> = Sequence::new(volumes)
         .transform(Spaceout::amount(spaceout))
         .transform(Humanize::amount())
         .iter()
         .map(|x| {
             let beats = 1.0 / x.duration().per_beat();
             let bars = beats * 4.0;
-            (x.intensity(), bars as f64)
+            Block::new(bars as f64, x.intensity())
         })
         .collect();
-    let mut graph = Hits::new();
-    graph.beats(4);
-    graph.draw("foo.ppm", &values)?;
 
-    let notes: Vec<(Option<i32>, f32)> = Sequence::new(melody)
+    let notes: Vec<Block> = Sequence::new(melody)
         .transform(Spaceout::note(spaceout))
         .transform(Humanize::note())
         .iter()
@@ -45,12 +46,18 @@ fn main() -> std::io::Result<()> {
             let y = n.midi();
             let beats = 1.0 / n.per_beat();
             let bars = beats * 4.0;
-            (y, bars)
+            if let Some(y) = y {
+                return Block::new(bars.into(), y.into());
+            } else {
+                return Block::new(bars.into(), 00.0);
+            }
         })
         .collect();
-    let mut roll = Roll::new();
-    roll.beats(4);
-    roll.draw("foo1.ppm", &notes)?;
+
+    let track = Track::new(&values, &notes);
+    let w = FileWriter::new("foo.ppm");
+    let renderer = Renderer::new(&track.size());
+    w.write(renderer, track)?;
 
     Ok(())
 }
