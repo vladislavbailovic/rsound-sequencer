@@ -1,12 +1,16 @@
 #[cfg(feature = "graph")]
-use sequencer::graph::Hits;
+use graph::ppm::Renderer;
+#[cfg(feature = "graph")]
+use graph::writer::{FileWriter, Writer};
+#[cfg(feature = "graph")]
+use graph::{Block, Graph, Hits};
 
 use note::*;
 use sequencer::{Amount, Humanize, Sequence};
 
 #[cfg(feature = "graph")]
 fn main() -> std::io::Result<()> {
-    let values: Vec<(f64, f64)> = Sequence::new(vec![
+    let values: Vec<Block> = Sequence::new(vec![
         Amount::at(0.75, val![1 / 4]),
         Amount::zero(val![1 / 14]),
         Amount::new(val![1/4 T]),
@@ -20,13 +24,14 @@ fn main() -> std::io::Result<()> {
     .map(|x| {
         let beats = 1.0 / x.duration().per_beat();
         let bars = beats * 4.0;
-        (x.intensity(), bars as f64)
+        return Block::new(bars as f64, x.intensity() * 10.0)
     })
     .collect();
 
-    let mut graph = Hits::new();
-    graph.beats(4);
-    graph.draw("foo.ppm", &values)?;
+    let hits = Hits::new(&values);
+    let w = FileWriter::new("foo.ppm");
+    let renderer = Renderer::new(&hits.size());
+    w.write(renderer, hits)?;
 
     Ok(())
 }
