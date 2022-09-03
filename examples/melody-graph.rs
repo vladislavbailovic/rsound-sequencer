@@ -11,11 +11,11 @@ use sequencer::*;
 fn get_blocks() -> Vec<Block> {
     Sequence::new(vec![
         note![A: C0, 1 / 4],
-        // pause![1 / 14],
+        pause![1 / 14],
         note![C: C1, 1 / 4 T],
-        // pause![1 / 14],
+        pause![1 / 14],
         note![A: C0, 1 / 8],
-        // pause![1 / 14],
+        pause![1 / 14],
         note![B: C0, 1 / 8 T],
     ])
     .transform(Humanize::note())
