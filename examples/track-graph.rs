@@ -1,5 +1,5 @@
 #[cfg(feature = "graph")]
-use graph::ppm::Renderer;
+use graph::svg::Renderer;
 #[cfg(feature = "graph")]
 use graph::writer::{FileWriter, Writer};
 #[cfg(feature = "graph")]
@@ -55,7 +55,7 @@ fn main() -> std::io::Result<()> {
         .collect();
 
     let track = Track::new(&values, &notes);
-    let w = FileWriter::new("foo.ppm");
+    let w = FileWriter::new("foo.svg");
     let renderer = Renderer::new(&track.size());
     w.write(renderer, track)?;
 
