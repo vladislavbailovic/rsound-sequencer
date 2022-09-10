@@ -7,8 +7,7 @@ edition = "2021"
 
 [dependencies]
 note = { version="^0", path="../note" }
-graph = { version="^0", path="../graph" }
+graph = { version="^0", path="../graph", optional=true }
 
 [features]
 default = ["graph"]
-graph = []
