@@ -1,7 +1,7 @@
 #[cfg(feature = "graph")]
 use graph::svg::Renderer;
 #[cfg(feature = "graph")]
-use graph::writer::{FileWriter, Writer};
+use graph::writer::{FileWriter, ImageWriter};
 #[cfg(feature = "graph")]
 use graph::{Block, Graph, Track};
 
@@ -57,7 +57,7 @@ fn main() -> std::io::Result<()> {
     let track = Track::new(&values, &notes);
     let w = FileWriter::new("foo.svg");
     let renderer = Renderer::new(&track.size());
-    w.write(renderer, track)?;
+    w.write_image(renderer, track)?;
 
     Ok(())
 }

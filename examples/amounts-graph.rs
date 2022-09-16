@@ -1,7 +1,7 @@
 #[cfg(feature = "graph")]
 use graph::ppm::Renderer;
 #[cfg(feature = "graph")]
-use graph::writer::{FileWriter, Writer};
+use graph::writer::{FileWriter, ImageWriter};
 #[cfg(feature = "graph")]
 use graph::{Block, Graph, Hits};
 
@@ -31,7 +31,7 @@ fn main() -> std::io::Result<()> {
     let hits = Hits::new(&values);
     let w = FileWriter::new("foo.ppm");
     let renderer = Renderer::new(&hits.size());
-    w.write(renderer, hits)?;
+    w.write_image(renderer, hits)?;
 
     Ok(())
 }

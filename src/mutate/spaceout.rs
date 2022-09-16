@@ -72,8 +72,8 @@ mod tests {
         let mut spaced = Sequence::new(src.clone());
         spaced.transform(Spaceout::note(val![1 / 4]));
 
-        let total = seq.iter().map(|x| x.secs(bpm)).sum::<f32>();
-        let equal = spaced.iter().map(|x| x.secs(bpm)).sum::<f32>();
+        let total = seq.iter().map(|x| x.secs(bpm)).sum::<f64>();
+        let equal = spaced.iter().map(|x| x.secs(bpm)).sum::<f64>();
         assert_eq!(total, equal / 2.0);
     }
 }

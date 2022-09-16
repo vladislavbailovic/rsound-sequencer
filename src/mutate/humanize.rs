@@ -133,8 +133,8 @@ mod tests {
         let mut humanized = Sequence::new(src.clone());
         humanized.transform(Humanize::note());
 
-        let total = seq.iter().map(|x| x.secs(bpm)).sum::<f32>();
-        let human_total = humanized.iter().map(|x| x.secs(bpm)).sum::<f32>();
+        let total = seq.iter().map(|x| x.secs(bpm)).sum::<f64>();
+        let human_total = humanized.iter().map(|x| x.secs(bpm)).sum::<f64>();
         assert_eq!(total, human_total);
 
         let notes = seq
@@ -150,11 +150,11 @@ mod tests {
         let playtime = seq
             .iter()
             .map(|x| if x.midi().is_some() { x.secs(bpm) } else { 0.0 })
-            .sum::<f32>();
+            .sum::<f64>();
         let human_playtime = humanized
             .iter()
             .map(|x| if x.midi().is_some() { x.secs(bpm) } else { 0.0 })
-            .sum::<f32>();
+            .sum::<f64>();
         assert!(
             playtime > human_playtime,
             "expected humanizing to reduce playtime. Original: {}, human: {}",
@@ -165,11 +165,11 @@ mod tests {
         let pausetime = seq
             .iter()
             .map(|x| if x.midi().is_none() { x.secs(bpm) } else { 0.0 })
-            .sum::<f32>();
+            .sum::<f64>();
         let human_pausetime = humanized
             .iter()
             .map(|x| if x.midi().is_none() { x.secs(bpm) } else { 0.0 })
-            .sum::<f32>();
+            .sum::<f64>();
         assert!(
             pausetime < human_pausetime,
             "expected humanizing to increase pausetime. Original: {}, human: {}",
@@ -194,11 +194,11 @@ mod tests {
         let mut humanized = Sequence::new(src.clone());
         humanized.transform(Humanize::amount());
 
-        let total = seq.iter().map(|x| x.duration().secs(bpm)).sum::<f32>();
+        let total = seq.iter().map(|x| x.duration().secs(bpm)).sum::<f64>();
         let human_total = humanized
             .iter()
             .map(|x| x.duration().secs(bpm))
-            .sum::<f32>();
+            .sum::<f64>();
         assert_eq!(total, human_total);
     }
 }
